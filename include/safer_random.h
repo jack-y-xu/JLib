@@ -75,7 +75,7 @@ namespace SaferRandom {
         requires true_floating<range_value_t<Probs>> && std::same_as<range_value_t<Elements>, T>
         static T weighted_select(const Probs& p, const Elements& e, T fallback, bool safety_check=true) {
             if (safety_check) {
-                // size is O(n) if not using sized_range
+                // size runtime is O(n) if not using sized_range
                 if (size(p) != size(e))
                     throw std::runtime_error("Range sizes must be the same");
 
