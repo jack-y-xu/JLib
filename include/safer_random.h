@@ -2,6 +2,8 @@
 #ifndef SAFER_RANDOM
 #define SAFER_RANDOM
 
+#include "doctest.h"
+
 #include <concepts>
 #include <type_traits>
 #include <ranges>
@@ -16,7 +18,7 @@ namespace SaferRandom {
     template <typename T>
     concept true_floating = !std::integral<T> && std::floating_point<T>;
 
-    namespace {
+    namespace internal {
         struct GeneratorInitWrapper {
             unsigned int seed;
             std::mt19937 generator;
@@ -30,10 +32,22 @@ namespace SaferRandom {
     }
 
     class ParallelRandom {
+
     public:
+
+        // arm64 linker doesn't work with static thread_local as class variable.
+        // This is a temporary workaround for static thread_local
+        inline static internal::GeneratorInitWrapper& getGen() {
+            static thread_local internal::GeneratorInitWrapper gen;
+            return gen;
+        }
+
+        inline static unsigned int getSeed() {
+            return getGen().seed;
+        }
+
         inline static std::mt19937& getGenerator() {
-            static thread_local GeneratorInitWrapper gen;
-            return gen.generator;
+            return getGen().generator;
         }
 
         template <true_floating T>
@@ -57,9 +71,9 @@ namespace SaferRandom {
             return random<T>() <= p;
         }
 
-        template <range P, range E, typename T>
-        requires true_floating<range_value_t<P>> && std::same_as<range_value_t<E>, T>
-        static T weighted_select(const P& p, const E& e, T fallback, bool safety_check=true) {
+        template <range Probs, range Elements, typename T>
+        requires true_floating<range_value_t<Probs>> && std::same_as<range_value_t<Elements>, T>
+        static T weighted_select(const Probs& p, const Elements& e, T fallback, bool safety_check=true) {
             if (safety_check) {
                 // size is O(n) if not using sized_range
                 if (size(p) != size(e))
