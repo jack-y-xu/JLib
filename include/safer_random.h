@@ -35,7 +35,7 @@ namespace SaferRandom {
 
     public:
 
-        // arm64 linker doesn't work with static thread_local as class variable.
+        // C++ linker doesn't work with static thread_local as class variable.
         // This is a temporary workaround for static thread_local
         inline static internal::GeneratorInitWrapper& getGen() {
             static thread_local internal::GeneratorInitWrapper gen;
