@@ -8,5 +8,10 @@ safer_random.h - a library for safe(r) & efficient parallel random generators. C
 
 
 
+TODOS:
+* Add some benchmarks for safer_random (compare initializing generator each time vs using static thread_local)
+* Add python-like print functions header
+
+
 
 
