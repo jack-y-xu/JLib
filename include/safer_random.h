@@ -33,8 +33,7 @@ namespace SaferRandom {
 
     class ParallelRandom {
 
-    public:
-
+    private:
         // C++ linker doesn't work with static thread_local as class variable.
         // This is a temporary workaround for static thread_local
         inline static internal::GeneratorInitWrapper& getGen() {
@@ -42,6 +41,8 @@ namespace SaferRandom {
             return gen;
         }
 
+    public:
+        
         inline static unsigned int getSeed() {
             return getGen().seed;
         }
